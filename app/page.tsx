@@ -108,6 +108,38 @@ export default function Home() {
     };
   }, [bodyweight, load, reps, usesBodyweight]);
 
+  const repetitionTable = useMemo(() => {
+    if (!calculation) return [];
+
+    const bw = Number(bodyweight);
+
+    return Array.from({ length: 12 }, (_, index) => {
+      const repetitionCount = index + 1;
+      const estimatedLoads =
+        repetitionCount === 1
+          ? [
+              calculation.averageTotal,
+              calculation.averageTotal,
+              calculation.averageTotal,
+            ]
+          : [
+              calculation.averageTotal / (1 + repetitionCount / 30),
+              calculation.averageTotal * ((37 - repetitionCount) / 36),
+              calculation.averageTotal / Math.pow(repetitionCount, 0.1),
+            ];
+
+      const averageTotal =
+        estimatedLoads.reduce((sum, value) => sum + value, 0) /
+        estimatedLoads.length;
+
+      return {
+        reps: repetitionCount,
+        total: averageTotal,
+        load: usesBodyweight ? averageTotal - bw : averageTotal,
+      };
+    });
+  }, [bodyweight, calculation, usesBodyweight]);
+
   const switchMode = (nextMode: string) => {
     const next = nextMode as Mode;
     setMode(next);
@@ -352,6 +384,86 @@ export default function Home() {
             </div>
           </aside>
         </div>
+
+        {calculation && (
+          <section className="mt-6 overflow-hidden rounded-[1.75rem] border border-white/10 bg-white/[0.045] shadow-2xl shadow-black/20 backdrop-blur-sm">
+            <div className="flex flex-col gap-2 border-b border-white/10 p-5 sm:flex-row sm:items-end sm:justify-between sm:p-7">
+              <div>
+                <p className="text-[10px] font-black uppercase tracking-[0.16em] text-[#c8ff32]">
+                  Proyección de fuerza
+                </p>
+                <h2 className="mt-1 text-2xl font-black tracking-tight sm:text-3xl">
+                  Tabla de cargas · 1–12 repeticiones
+                </h2>
+              </div>
+              <p className="max-w-md text-xs leading-5 text-white/45 sm:text-right">
+                Carga estimada al invertir Epley, Brzycki y Lombardi usando tu 1RM promedio.
+              </p>
+            </div>
+
+            <div className="overflow-x-auto">
+              <table className="w-full min-w-[30rem] border-collapse text-left">
+                <thead>
+                  <tr className="border-b border-white/10 text-[10px] font-black uppercase tracking-[0.14em] text-white/40">
+                    <th scope="col" className="px-5 py-4 sm:px-7">
+                      Repeticiones
+                    </th>
+                    <th scope="col" className="px-5 py-4 text-right sm:px-7">
+                      {usesBodyweight ? "Lastre estimado" : "Carga estimada"}
+                    </th>
+                    {usesBodyweight && (
+                      <th scope="col" className="px-5 py-4 text-right sm:px-7">
+                        Carga total
+                      </th>
+                    )}
+                  </tr>
+                </thead>
+                <tbody>
+                  {repetitionTable.map((row) => {
+                    const isCurrent = Number(reps) === row.reps;
+
+                    return (
+                      <tr
+                        key={row.reps}
+                        className={`border-b border-white/[0.07] last:border-0 ${
+                          isCurrent ? "bg-[#c8ff32]/10" : ""
+                        }`}
+                      >
+                        <th
+                          scope="row"
+                          className="px-5 py-3.5 text-sm font-black tabular-nums sm:px-7"
+                        >
+                          <span className="inline-flex items-center gap-2">
+                            {row.reps}
+                            {isCurrent && (
+                              <span className="rounded-full bg-[#c8ff32] px-2 py-0.5 text-[9px] uppercase tracking-[0.1em] text-[#0b0d0c]">
+                                Actual
+                              </span>
+                            )}
+                          </span>
+                        </th>
+                        <td className="px-5 py-3.5 text-right font-mono text-sm font-black tabular-nums text-[#c8ff32] sm:px-7">
+                          {round(row.load)} kg
+                        </td>
+                        {usesBodyweight && (
+                          <td className="px-5 py-3.5 text-right font-mono text-sm font-bold tabular-nums text-white/65 sm:px-7">
+                            {round(row.total)} kg
+                          </td>
+                        )}
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+
+            {usesBodyweight && repetitionTable.some((row) => row.load < 0) && (
+              <p className="border-t border-white/10 px-5 py-4 text-xs leading-5 text-white/40 sm:px-7">
+                Un lastre negativo representa la asistencia aproximada necesaria para esa cantidad de repeticiones.
+              </p>
+            )}
+          </section>
+        )}
 
         <footer className="mt-10 border-t border-white/10 py-5 text-[10px] font-bold uppercase tracking-[0.12em] text-white/30">
           Estimación orientativa · No sustituye un intento real

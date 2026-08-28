@@ -12,6 +12,7 @@ Calculadora web de **1RM estimado** para powerlifting y streetlifting. Combina l
 - Desglose individual de Epley, Brzycki y Lombardi.
 - Cálculo específico para ejercicios con peso corporal y lastre.
 - Validación de 1 a 15 repeticiones.
+- Tabla de cargas estimadas para series de 1 a 12 repeticiones.
 - Interfaz adaptable a celulares y computadoras.
 
 ## Ejercicios incluidos
@@ -40,6 +41,10 @@ Sea `W` la carga utilizada y `r` el número de repeticiones:
 | Lombardi | `W × r^0.10` |
 
 El resultado principal es el promedio aritmético de las tres estimaciones. Cuando se registra una sola repetición, la aplicación toma la carga levantada como el 1RM observado.
+
+### Tabla de cargas por repeticiones
+
+A partir del 1RM promedio, la aplicación invierte las tres fórmulas y promedia sus resultados para estimar la carga correspondiente a series de 1 a 12 repeticiones. En ejercicios con peso corporal muestra tanto el lastre como la carga total; un lastre negativo representa asistencia.
 
 ### Ejercicios con lastre
 
