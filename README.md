@@ -64,7 +64,7 @@ En sentadilla, press de banca y peso muerto se utiliza directamente el peso colo
 ```bash
 git clone https://github.com/lalo01jm/calculadora-sbd-mdps.git
 cd calculadora-sbd-mdps
-npm ci
+npm install
 npm run dev
 ```
 
@@ -81,7 +81,7 @@ npm run build
 - TypeScript
 - Tailwind CSS
 - Radix UI
-- Vinext
+- GitHub Pages
 
 ## Aviso
 
