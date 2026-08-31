@@ -7,6 +7,7 @@ Calculadora web de **1RM estimado** para powerlifting y streetlifting. Combina l
 ## Funcionalidades
 
 - Dos modalidades: SBD y MDPS.
+- Selector entre kilogramos y libras con conversión automática de los valores.
 - Resultado actualizado automáticamente al cambiar los datos.
 - Promedio de tres fórmulas conocidas de estimación de 1RM.
 - Desglose individual de Epley, Brzycki y Lombardi.

@@ -15,6 +15,7 @@ import {
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 type Mode = "sbd" | "mdps";
+type Unit = "kg" | "lb";
 type Exercise =
   | "squat"
   | "bench"
@@ -39,6 +40,7 @@ const exercises: Record<Mode, { value: Exercise; label: string }[]> = {
 };
 
 const bodyweightExercises: Exercise[] = ["muscle-up", "pull-up", "dip"];
+const kilogramsToPounds = 2.2046226218;
 
 function round(value: number) {
   return Math.round(value * 10) / 10;
@@ -50,6 +52,7 @@ export default function Home() {
   const [bodyweight, setBodyweight] = useState("75");
   const [load, setLoad] = useState("20");
   const [reps, setReps] = useState("5");
+  const [unit, setUnit] = useState<Unit>("kg");
 
   const usesBodyweight = bodyweightExercises.includes(exercise);
   const selectedExercise = exercises[mode].find(
@@ -146,6 +149,24 @@ export default function Home() {
     setExercise(next === "sbd" ? "squat" : "pull-up");
   };
 
+  const switchUnit = (nextUnit: Unit) => {
+    if (nextUnit === unit) return;
+
+    const factor = nextUnit === "lb" ? kilogramsToPounds : 1 / kilogramsToPounds;
+    const convert = (value: string) => {
+      if (value.trim() === "") return value;
+
+      const numericValue = Number(value);
+      return Number.isFinite(numericValue)
+        ? String(round(numericValue * factor))
+        : value;
+    };
+
+    setBodyweight((value) => convert(value));
+    setLoad((value) => convert(value));
+    setUnit(nextUnit);
+  };
+
   return (
     <main className="relative min-h-screen overflow-hidden bg-[#0b0d0c] text-[#f4f3ea]">
       <div className="pointer-events-none absolute inset-0 bg-grid opacity-40" />
@@ -165,9 +186,27 @@ export default function Home() {
             </div>
           </div>
           <div className="flex flex-col items-end gap-1.5">
-            <span className="rounded-full border border-white/10 px-3 py-1.5 text-[10px] font-bold uppercase tracking-[0.16em] text-white/50">
-              kg
-            </span>
+            <div
+              className="flex rounded-full border border-white/10 bg-black/20 p-0.5"
+              role="group"
+              aria-label="Unidad de peso"
+            >
+              {(["kg", "lb"] as Unit[]).map((option) => (
+                <button
+                  key={option}
+                  type="button"
+                  onClick={() => switchUnit(option)}
+                  aria-pressed={unit === option}
+                  className={`rounded-full px-2.5 py-1 text-[10px] font-black uppercase tracking-[0.12em] transition-colors ${
+                    unit === option
+                      ? "bg-[#c8ff32] text-[#0b0d0c]"
+                      : "text-white/45 hover:text-white/75"
+                  }`}
+                >
+                  {option}
+                </button>
+              ))}
+            </div>
             <span className="max-w-40 text-right text-[9px] font-semibold leading-3 text-white/55">
               Página generada enteramente por IA
             </span>
@@ -257,7 +296,7 @@ export default function Home() {
                       aria-required={usesBodyweight}
                     />
                     <span className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-xs font-bold text-white/35">
-                      KG
+                      {unit.toUpperCase()}
                     </span>
                   </div>
                 </div>
@@ -281,7 +320,7 @@ export default function Home() {
                       className="h-14 rounded-xl border-white/10 bg-black/25 px-4 pr-12 text-xl font-black shadow-none focus-visible:border-[#c8ff32]/60 focus-visible:ring-[#c8ff32]/20"
                     />
                     <span className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-xs font-bold text-white/35">
-                      KG
+                      {unit.toUpperCase()}
                     </span>
                   </div>
                 </div>
@@ -336,7 +375,7 @@ export default function Home() {
                         {round(calculation.average)}
                       </span>
                       <span className="mb-1 text-lg font-black uppercase text-black/35 sm:mb-2">
-                        kg
+                        {unit}
                       </span>
                     </div>
                     <p className="mt-5 inline-flex items-center gap-2 rounded-full bg-[#c8ff32] px-3 py-1.5 text-[11px] font-black uppercase tracking-[0.08em]">
@@ -345,7 +384,7 @@ export default function Home() {
                     </p>
                     {usesBodyweight && (
                       <p className="mt-4 text-xs font-semibold text-black/45">
-                        Carga total estimada: {round(calculation.averageTotal)} kg
+                        Carga total estimada: {round(calculation.averageTotal)} {unit}
                       </p>
                     )}
                   </div>
@@ -371,7 +410,7 @@ export default function Home() {
                     >
                       <span className="text-sm font-bold">{formula.name}</span>
                       <span className="font-mono text-sm font-black tabular-nums">
-                        {round(formula.result)} kg
+                        {round(formula.result)} {unit}
                       </span>
                     </div>
                   ))}
@@ -448,11 +487,11 @@ export default function Home() {
                           </span>
                         </th>
                         <td className="px-5 py-3.5 text-right font-mono text-sm font-black tabular-nums text-[#c8ff32] sm:px-7">
-                          {round(row.load)} kg
+                          {round(row.load)} {unit}
                         </td>
                         {usesBodyweight && (
                           <td className="px-5 py-3.5 text-right font-mono text-sm font-bold tabular-nums text-white/65 sm:px-7">
-                            {round(row.total)} kg
+                            {round(row.total)} {unit}
                           </td>
                         )}
                       </tr>
