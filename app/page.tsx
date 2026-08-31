@@ -164,9 +164,14 @@ export default function Home() {
               </p>
             </div>
           </div>
-          <span className="rounded-full border border-white/10 px-3 py-1.5 text-[10px] font-bold uppercase tracking-[0.16em] text-white/50">
-            kg
-          </span>
+          <div className="flex flex-col items-end gap-1.5">
+            <span className="rounded-full border border-white/10 px-3 py-1.5 text-[10px] font-bold uppercase tracking-[0.16em] text-white/50">
+              kg
+            </span>
+            <span className="max-w-40 text-right text-[9px] font-semibold leading-3 text-white/55">
+              Página generada enteramente por IA
+            </span>
+          </div>
         </header>
 
         <div className="grid flex-1 items-start gap-6 lg:grid-cols-[minmax(0,1.02fr)_minmax(360px,.98fr)] lg:gap-12">
