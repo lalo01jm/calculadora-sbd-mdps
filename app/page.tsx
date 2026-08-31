@@ -465,8 +465,11 @@ export default function Home() {
           </section>
         )}
 
-        <footer className="mt-10 border-t border-white/10 py-5 text-[10px] font-bold uppercase tracking-[0.12em] text-white/30">
-          Estimación orientativa · No sustituye un intento real
+        <footer className="mt-10 flex flex-col gap-2 border-t border-white/10 py-5 text-[10px] font-bold uppercase tracking-[0.12em] text-white/30 sm:flex-row sm:items-center sm:justify-between">
+          <span>Estimación orientativa · No sustituye un intento real</span>
+          <span className="normal-case tracking-normal text-white/25">
+            Esta página fue enteramente generada por IA.
+          </span>
         </footer>
       </div>
     </main>
