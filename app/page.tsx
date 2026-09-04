@@ -185,9 +185,9 @@ export default function Home() {
               </p>
             </div>
           </div>
-          <div className="flex flex-col items-end gap-1.5">
+          <div className="flex flex-col items-end gap-1.5 pt-9">
             <div
-              className="flex rounded-full border border-white/10 bg-black/20 p-0.5"
+              className="fixed right-4 top-5 z-50 flex rounded-full border border-white/15 bg-[#0b0d0c]/90 p-0.5 shadow-[0_8px_24px_rgba(0,0,0,.35)] backdrop-blur-md sm:right-7 sm:top-7 lg:right-10 xl:right-[calc((100vw-72rem)/2+2.5rem)]"
               role="group"
               aria-label="Unidad de peso"
             >
