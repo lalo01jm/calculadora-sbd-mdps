@@ -8,6 +8,8 @@ Calculadora web de **1RM estimado** para powerlifting y streetlifting. Combina l
 
 - Dos modalidades: SBD y MDPS.
 - Selector entre kilogramos y libras con conversión automática de los valores.
+- Ajuste opcional mediante RIR (repeticiones en reserva).
+- El modo SBD solicita únicamente el peso levantado; no muestra peso corporal.
 - Resultado actualizado automáticamente al cambiar los datos.
 - Promedio de tres fórmulas conocidas de estimación de 1RM.
 - Desglose individual de Epley, Brzycki y Lombardi.
@@ -41,7 +43,17 @@ Sea `W` la carga utilizada y `r` el número de repeticiones:
 | Brzycki | `W × 36 / (37 − r)` |
 | Lombardi | `W × r^0.10` |
 
-El resultado principal es el promedio aritmético de las tres estimaciones. Cuando se registra una sola repetición, la aplicación toma la carga levantada como el 1RM observado.
+El resultado principal es el promedio aritmético de las tres estimaciones. Cuando se registra una sola repetición con RIR 0, la aplicación toma la carga levantada como el 1RM observado.
+
+### Ajuste por RIR
+
+El campo RIR es opcional. Vacío o `0` indica una serie al fallo. Cuando se introduce un valor mayor, el cálculo utiliza:
+
+```text
+repeticiones efectivas = repeticiones realizadas + RIR
+```
+
+La suma de repeticiones y RIR está limitada a 15 para mantener el cálculo dentro del intervalo admitido por la aplicación.
 
 ### Tabla de cargas por repeticiones
 

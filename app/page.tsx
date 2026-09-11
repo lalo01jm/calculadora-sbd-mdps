@@ -52,6 +52,7 @@ export default function Home() {
   const [bodyweight, setBodyweight] = useState("75");
   const [load, setLoad] = useState("20");
   const [reps, setReps] = useState("5");
+  const [rir, setRir] = useState("");
   const [unit, setUnit] = useState<Unit>("kg");
 
   const usesBodyweight = bodyweightExercises.includes(exercise);
@@ -63,9 +64,17 @@ export default function Home() {
     const bw = Number(bodyweight);
     const lifted = Number(load);
     const repetitionCount = Number(reps);
+    const rirValue = rir.trim() === "" ? 0 : Number(rir);
+    const effectiveReps = repetitionCount + rirValue;
     const validBodyweight = !usesBodyweight || (bw > 0 && Number.isFinite(bw));
+    const validRir =
+      Number.isFinite(rirValue) &&
+      rirValue >= 0 &&
+      rirValue <= 10 &&
+      effectiveReps <= 15;
     const valid =
       validBodyweight &&
+      validRir &&
       lifted >= 0 &&
       Number.isFinite(lifted) &&
       Number.isInteger(repetitionCount) &&
@@ -76,7 +85,7 @@ export default function Home() {
 
     const workingLoad = lifted + (usesBodyweight ? bw : 0);
     const formulas =
-      repetitionCount === 1
+      effectiveReps === 1
         ? [
             { name: "Epley", total: workingLoad },
             { name: "Brzycki", total: workingLoad },
@@ -85,15 +94,15 @@ export default function Home() {
         : [
             {
               name: "Epley",
-              total: workingLoad * (1 + repetitionCount / 30),
+              total: workingLoad * (1 + effectiveReps / 30),
             },
             {
               name: "Brzycki",
-              total: workingLoad * (36 / (37 - repetitionCount)),
+              total: workingLoad * (36 / (37 - effectiveReps)),
             },
             {
               name: "Lombardi",
-              total: workingLoad * Math.pow(repetitionCount, 0.1),
+              total: workingLoad * Math.pow(effectiveReps, 0.1),
             },
           ];
 
@@ -108,8 +117,10 @@ export default function Home() {
       })),
       average: usesBodyweight ? averageTotal - bw : averageTotal,
       averageTotal,
+      effectiveReps,
+      rir: rirValue,
     };
-  }, [bodyweight, load, reps, usesBodyweight]);
+  }, [bodyweight, load, reps, rir, usesBodyweight]);
 
   const repetitionTable = useMemo(() => {
     if (!calculation) return [];
@@ -271,37 +282,39 @@ export default function Home() {
                   </Select>
                 </div>
 
-                <div>
-                  <Label
-                    htmlFor="bodyweight"
-                    className="mb-2 text-[11px] font-bold uppercase tracking-[0.13em] text-white/50"
-                  >
-                    Peso corporal
-                    {!usesBodyweight && (
-                      <span className="font-medium normal-case tracking-normal text-white/30">
-                        opcional
+                {mode === "mdps" && (
+                  <div>
+                    <Label
+                      htmlFor="bodyweight"
+                      className="mb-2 text-[11px] font-bold uppercase tracking-[0.13em] text-white/50"
+                    >
+                      Peso corporal
+                      {!usesBodyweight && (
+                        <span className="font-medium normal-case tracking-normal text-white/30">
+                          opcional
+                        </span>
+                      )}
+                    </Label>
+                    <div className="relative">
+                      <Input
+                        id="bodyweight"
+                        inputMode="decimal"
+                        min="1"
+                        step="0.1"
+                        type="number"
+                        value={bodyweight}
+                        onChange={(event) => setBodyweight(event.target.value)}
+                        className="h-14 rounded-xl border-white/10 bg-black/25 px-4 pr-12 text-xl font-black shadow-none focus-visible:border-[#c8ff32]/60 focus-visible:ring-[#c8ff32]/20"
+                        aria-required={usesBodyweight}
+                      />
+                      <span className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-xs font-bold text-white/35">
+                        {unit.toUpperCase()}
                       </span>
-                    )}
-                  </Label>
-                  <div className="relative">
-                    <Input
-                      id="bodyweight"
-                      inputMode="decimal"
-                      min="1"
-                      step="0.1"
-                      type="number"
-                      value={bodyweight}
-                      onChange={(event) => setBodyweight(event.target.value)}
-                      className="h-14 rounded-xl border-white/10 bg-black/25 px-4 pr-12 text-xl font-black shadow-none focus-visible:border-[#c8ff32]/60 focus-visible:ring-[#c8ff32]/20"
-                      aria-required={usesBodyweight}
-                    />
-                    <span className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-xs font-bold text-white/35">
-                      {unit.toUpperCase()}
-                    </span>
+                    </div>
                   </div>
-                </div>
+                )}
 
-                <div>
+                <div className={mode === "sbd" ? "sm:col-span-2" : ""}>
                   <Label
                     htmlFor="load"
                     className="mb-2 text-[11px] font-bold uppercase tracking-[0.13em] text-white/50"
@@ -325,7 +338,7 @@ export default function Home() {
                   </div>
                 </div>
 
-                <div className="sm:col-span-2">
+                <div>
                   <Label
                     htmlFor="reps"
                     className="mb-2 text-[11px] font-bold uppercase tracking-[0.13em] text-white/50"
@@ -344,7 +357,34 @@ export default function Home() {
                     className="h-14 rounded-xl border-white/10 bg-black/25 px-4 text-xl font-black shadow-none focus-visible:border-[#c8ff32]/60 focus-visible:ring-[#c8ff32]/20"
                   />
                   <p className="mt-2 text-xs text-white/35">
-                    Usa de 1 a 15 repeticiones; la estimación es más útil cerca de la fuerza máxima.
+                    Repeticiones realizadas en la serie.
+                  </p>
+                </div>
+
+                <div>
+                  <Label
+                    htmlFor="rir"
+                    className="mb-2 text-[11px] font-bold uppercase tracking-[0.13em] text-white/50"
+                  >
+                    RIR
+                    <span className="font-medium normal-case tracking-normal text-white/30">
+                      opcional
+                    </span>
+                  </Label>
+                  <Input
+                    id="rir"
+                    inputMode="decimal"
+                    min="0"
+                    max="10"
+                    step="0.5"
+                    type="number"
+                    placeholder="0"
+                    value={rir}
+                    onChange={(event) => setRir(event.target.value)}
+                    className="h-14 rounded-xl border-white/10 bg-black/25 px-4 text-xl font-black shadow-none focus-visible:border-[#c8ff32]/60 focus-visible:ring-[#c8ff32]/20"
+                  />
+                  <p className="mt-2 text-xs text-white/35">
+                    Vacío o 0 = serie al fallo. Repeticiones + RIR debe ser ≤ 15.
                   </p>
                 </div>
               </div>
@@ -382,17 +422,26 @@ export default function Home() {
                       <Dumbbell aria-hidden="true" className="size-3.5" />
                       Promedio de 3 fórmulas
                     </p>
-                    {usesBodyweight && (
-                      <p className="mt-4 text-xs font-semibold text-black/45">
-                        Carga total estimada: {round(calculation.averageTotal)} {unit}
-                      </p>
+                    {(usesBodyweight || calculation.rir > 0) && (
+                      <div className="mt-4 space-y-1 text-xs font-semibold text-black/45">
+                        {usesBodyweight && (
+                          <p>
+                            Carga total estimada: {round(calculation.averageTotal)} {unit}
+                          </p>
+                        )}
+                        {calculation.rir > 0 && (
+                          <p>
+                            RIR aplicado: {round(calculation.rir)} · {round(calculation.effectiveReps)} repeticiones efectivas
+                          </p>
+                        )}
+                      </div>
                     )}
                   </div>
                 ) : (
                   <div className="py-8" aria-live="polite">
                     <p className="text-2xl font-black tracking-tight">Revisa los datos</p>
                     <p className="mt-2 text-sm leading-6 text-black/50">
-                      Introduce valores válidos y entre 1 y 15 repeticiones.
+                      Introduce valores válidos; repeticiones + RIR no puede superar 15.
                     </p>
                   </div>
                 )}
@@ -420,11 +469,16 @@ export default function Home() {
 
             <div className="mt-4 flex gap-3 rounded-2xl border border-white/10 bg-white/[0.035] p-4 text-xs leading-5 text-white/45">
               <Info aria-hidden="true" className="mt-0.5 size-4 shrink-0 text-[#c8ff32]" />
-              <p>
+              <div>
+                <p>
                 {usesBodyweight
                   ? "Se estima primero la carga total (peso corporal + lastre) y después se resta tu peso para obtener el 1RM de lastre."
                   : "En ejercicios con barra, el peso corporal no se suma a la carga; solo se usa el peso levantado."}
-              </p>
+                </p>
+                <p className="mt-2 text-white/35">
+                  El RIR se suma a las repeticiones realizadas para aproximar las repeticiones máximas posibles.
+                </p>
+              </div>
             </div>
           </aside>
         </div>
