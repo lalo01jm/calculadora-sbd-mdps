@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Activity, ArrowUpRight, Dumbbell, Info } from "lucide-react";
 
 import { Input } from "@/components/ui/input";
@@ -25,6 +25,37 @@ export default function Home() {
   const [unit, setUnit] = useState<Unit>("kg");
   const [unitError, setUnitError] = useState("");
   const loadInput = useRef<HTMLInputElement>(null);
+  const unitSwitcher = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const viewport = window.visualViewport;
+    if (!viewport) return;
+
+    let frame = 0;
+    const updatePosition = () => {
+      cancelAnimationFrame(frame);
+      frame = requestAnimationFrame(() => {
+        if (!unitSwitcher.current) return;
+
+        // Mobile keyboards can pan the visual viewport without moving fixed UI.
+        const x = viewport.offsetLeft + viewport.width - window.innerWidth;
+        const y = viewport.offsetTop;
+        unitSwitcher.current.style.transform = `translate3d(${x}px, ${y}px, 0)`;
+      });
+    };
+
+    updatePosition();
+    viewport.addEventListener("resize", updatePosition);
+    viewport.addEventListener("scroll", updatePosition);
+    window.addEventListener("resize", updatePosition);
+
+    return () => {
+      cancelAnimationFrame(frame);
+      viewport.removeEventListener("resize", updatePosition);
+      viewport.removeEventListener("scroll", updatePosition);
+      window.removeEventListener("resize", updatePosition);
+    };
+  }, []);
 
   const bodyweightValue = Number(bodyweight);
   const loadValue = parseWeightExpression(load);
@@ -192,6 +223,7 @@ export default function Home() {
           </div>
           <div className="flex flex-col items-end gap-1.5 pt-9">
             <div
+              ref={unitSwitcher}
               className="fixed right-4 top-5 z-50 flex rounded-full border border-white/15 bg-[#0b0d0c]/90 p-0.5 shadow-[0_8px_24px_rgba(0,0,0,.35)] backdrop-blur-md sm:right-7 sm:top-7 lg:right-10 xl:right-[calc((100vw-72rem)/2+2.5rem)]"
               role="group"
               aria-label="Unidad de peso"
@@ -200,6 +232,11 @@ export default function Home() {
                 <button
                   key={option}
                   type="button"
+                  onPointerDown={(event) => {
+                    if (document.activeElement instanceof HTMLInputElement) {
+                      event.preventDefault();
+                    }
+                  }}
                   onClick={() => switchUnit(option)}
                   aria-pressed={unit === option}
                   className={`rounded-full px-2.5 py-1 text-[10px] font-black uppercase tracking-[0.12em] transition-colors ${
