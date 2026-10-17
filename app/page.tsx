@@ -5,42 +5,11 @@ import { Activity, ArrowUpRight, Dumbbell, Info } from "lucide-react";
 
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { parseWeightExpression } from "@/lib/weight-expression";
 
 type Mode = "sbd" | "mdps";
 type Unit = "kg" | "lb";
-type Exercise =
-  | "squat"
-  | "bench"
-  | "deadlift"
-  | "muscle-up"
-  | "pull-up"
-  | "dip"
-  | "street-squat";
-
-const exercises: Record<Mode, { value: Exercise; label: string }[]> = {
-  sbd: [
-    { value: "squat", label: "Sentadilla" },
-    { value: "bench", label: "Press de banca" },
-    { value: "deadlift", label: "Peso muerto" },
-  ],
-  mdps: [
-    { value: "muscle-up", label: "Muscle-up" },
-    { value: "pull-up", label: "Dominada" },
-    { value: "dip", label: "Paralelas" },
-    { value: "street-squat", label: "Sentadilla" },
-  ],
-};
-
-const bodyweightExercises: Exercise[] = ["muscle-up", "pull-up", "dip"];
 const kilogramsToPounds = 2.2046226218;
 
 function round(value: number) {
@@ -49,7 +18,6 @@ function round(value: number) {
 
 export default function Home() {
   const [mode, setMode] = useState<Mode>("mdps");
-  const [exercise, setExercise] = useState<Exercise>("pull-up");
   const [bodyweight, setBodyweight] = useState("75");
   const [load, setLoad] = useState("20");
   const [reps, setReps] = useState("5");
@@ -61,10 +29,7 @@ export default function Home() {
   const bodyweightValue = Number(bodyweight);
   const loadValue = parseWeightExpression(load);
 
-  const usesBodyweight = bodyweightExercises.includes(exercise);
-  const selectedExercise = exercises[mode].find(
-    (item) => item.value === exercise,
-  )?.label;
+  const usesBodyweight = mode === "mdps";
 
   const calculation = useMemo(() => {
     const bw = Number(bodyweight);
@@ -161,9 +126,7 @@ export default function Home() {
   }, [bodyweight, calculation, usesBodyweight]);
 
   const switchMode = (nextMode: string) => {
-    const next = nextMode as Mode;
-    setMode(next);
-    setExercise(next === "sbd" ? "squat" : "pull-up");
+    setMode(nextMode as Mode);
   };
 
   const insertPlus = () => {
@@ -294,30 +257,6 @@ export default function Home() {
               </Tabs>
 
               <div className="grid gap-5 sm:grid-cols-2">
-                <div className="sm:col-span-2">
-                  <Label
-                    htmlFor="exercise"
-                    className="mb-2 text-[11px] font-bold uppercase tracking-[0.13em] text-white/50"
-                  >
-                    Ejercicio
-                  </Label>
-                  <Select value={exercise} onValueChange={(value) => setExercise(value as Exercise)}>
-                    <SelectTrigger
-                      id="exercise"
-                      className="h-12 w-full rounded-xl border-white/10 bg-black/25 px-4 text-base font-bold shadow-none focus-visible:border-[#c8ff32]/60 focus-visible:ring-[#c8ff32]/20"
-                    >
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent className="border-white/10 bg-[#171a18] text-[#f4f3ea]">
-                      {exercises[mode].map((item) => (
-                        <SelectItem key={item.value} value={item.value}>
-                          {item.label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-
                 {mode === "mdps" && (
                   <div>
                     <Label
@@ -325,11 +264,6 @@ export default function Home() {
                       className="mb-2 text-[11px] font-bold uppercase tracking-[0.13em] text-white/50"
                     >
                       Peso corporal
-                      {!usesBodyweight && (
-                        <span className="font-medium normal-case tracking-normal text-white/30">
-                          opcional
-                        </span>
-                      )}
                     </Label>
                     <div className="relative">
                       <Input
@@ -459,7 +393,7 @@ export default function Home() {
                 <div className="mb-8 flex items-start justify-between gap-4">
                   <div>
                     <p className="text-[10px] font-black uppercase tracking-[0.16em] text-black/40">
-                      Resultado · {selectedExercise}
+                      Resultado · {mode.toUpperCase()}
                     </p>
                     <p className="mt-1 text-sm font-semibold text-black/60">
                       {usesBodyweight ? "1RM de lastre" : "1RM en barra"}

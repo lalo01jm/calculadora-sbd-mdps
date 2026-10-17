@@ -6,7 +6,7 @@ Calculadora web de **1RM estimado** para powerlifting y streetlifting. Combina l
 
 ## Funcionalidades
 
-- Dos modalidades: SBD y MDPS.
+- Dos modalidades: SBD y MDPS, sin necesidad de seleccionar ejercicio.
 - Selector entre kilogramos y libras con conversión automática de los valores.
 - Ajuste opcional mediante RIR (repeticiones en reserva).
 - El modo SBD solicita únicamente el peso levantado; no muestra peso corporal.
@@ -19,20 +19,12 @@ Calculadora web de **1RM estimado** para powerlifting y streetlifting. Combina l
 - Tabla de cargas estimadas para series de 1 a 12 repeticiones.
 - Interfaz adaptable a celulares y computadoras.
 
-## Ejercicios incluidos
+## Modos de cálculo
 
-### SBD
+- **SBD:** usa únicamente el peso en barra para sentadilla, press de banca y peso muerto. Usa también este modo para la sentadilla de streetlifting.
+- **MDPS:** suma el peso corporal al lastre para muscle-up, dominadas y paralelas.
 
-- Sentadilla
-- Press de banca
-- Peso muerto
-
-### MDPS
-
-- Muscle-up
-- Dominada
-- Paralelas
-- Sentadilla
+No se selecciona un ejercicio específico: las fórmulas se aplican según el modo elegido.
 
 ## Cómo se calcula
 
