@@ -11,6 +11,7 @@ Calculadora web de **1RM estimado** para powerlifting y streetlifting. Combina l
 - Ajuste opcional mediante RIR (repeticiones en reserva).
 - El modo SBD solicita únicamente el peso levantado; no muestra peso corporal.
 - Resultado actualizado automáticamente al cambiar los datos.
+- Peso corporal y lastre/peso en barra admiten sumas, como `135+50` o `135+50+2.5`, con total visible debajo del campo.
 - Promedio de tres fórmulas conocidas de estimación de 1RM.
 - Desglose individual de Epley, Brzycki y Lombardi.
 - Cálculo específico para ejercicios con peso corporal y lastre.
@@ -90,6 +91,16 @@ Para generar la versión de producción:
 
 ```bash
 npm run build
+```
+
+## Sumas en los campos de peso
+
+Puedes escribir un peso o sumar varias cantidades con `+`: `135+50` equivale a `185`. Se admiten espacios y decimales con punto o coma. La suma se conserva mientras escribes y se muestra su total debajo del campo. Al cambiar entre kg y lb, se convierte el total. Las expresiones incompletas o no admitidas no generan una estimación.
+
+Para ejecutar las pruebas del analizador:
+
+```bash
+node --experimental-strip-types --test tests/*.test.mjs
 ```
 
 ## Tecnologías

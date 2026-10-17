@@ -13,6 +13,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { parseWeightExpression } from "@/lib/weight-expression";
 
 type Mode = "sbd" | "mdps";
 type Unit = "kg" | "lb";
@@ -54,6 +55,10 @@ export default function Home() {
   const [reps, setReps] = useState("5");
   const [rir, setRir] = useState("");
   const [unit, setUnit] = useState<Unit>("kg");
+  const [unitError, setUnitError] = useState("");
+
+  const bodyweightValue = parseWeightExpression(bodyweight);
+  const loadValue = parseWeightExpression(load);
 
   const usesBodyweight = bodyweightExercises.includes(exercise);
   const selectedExercise = exercises[mode].find(
@@ -61,8 +66,8 @@ export default function Home() {
   )?.label;
 
   const calculation = useMemo(() => {
-    const bw = Number(bodyweight);
-    const lifted = Number(load);
+    const bw = parseWeightExpression(bodyweight);
+    const lifted = parseWeightExpression(load);
     const repetitionCount = Number(reps);
     const rirValue = rir.trim() === "" ? 0 : Number(rir);
     const effectiveReps = repetitionCount + rirValue;
@@ -125,7 +130,7 @@ export default function Home() {
   const repetitionTable = useMemo(() => {
     if (!calculation) return [];
 
-    const bw = Number(bodyweight);
+    const bw = parseWeightExpression(bodyweight);
 
     return Array.from({ length: 12 }, (_, index) => {
       const repetitionCount = index + 1;
@@ -163,11 +168,20 @@ export default function Home() {
   const switchUnit = (nextUnit: Unit) => {
     if (nextUnit === unit) return;
 
+    if ([bodyweight, load].some((value) =>
+      value.trim() !== "" && !Number.isFinite(parseWeightExpression(value)),
+    )) {
+      setUnitError("Completa las sumas antes de cambiar de unidad.");
+      return;
+    }
+
+    setUnitError("");
+
     const factor = nextUnit === "lb" ? kilogramsToPounds : 1 / kilogramsToPounds;
     const convert = (value: string) => {
       if (value.trim() === "") return value;
 
-      const numericValue = Number(value);
+      const numericValue = parseWeightExpression(value);
       return Number.isFinite(numericValue)
         ? String(round(numericValue * factor))
         : value;
@@ -221,6 +235,11 @@ export default function Home() {
             <span className="max-w-40 text-right text-[9px] font-semibold leading-3 text-white/55">
               Página generada enteramente por IA
             </span>
+            {unitError && (
+              <span role="alert" className="max-w-44 text-right text-xs text-amber-300">
+                {unitError}
+              </span>
+            )}
           </div>
         </header>
 
@@ -298,19 +317,29 @@ export default function Home() {
                     <div className="relative">
                       <Input
                         id="bodyweight"
-                        inputMode="decimal"
-                        min="1"
-                        step="0.1"
-                        type="number"
+                        inputMode="text"
+                        type="text"
+                        autoComplete="off"
+                        spellCheck={false}
                         value={bodyweight}
-                        onChange={(event) => setBodyweight(event.target.value)}
+                        onChange={(event) => {
+                          setBodyweight(event.target.value);
+                          setUnitError("");
+                        }}
                         className="h-14 rounded-xl border-white/10 bg-black/25 px-4 pr-12 text-xl font-black shadow-none focus-visible:border-[#c8ff32]/60 focus-visible:ring-[#c8ff32]/20"
                         aria-required={usesBodyweight}
+                        aria-describedby="bodyweight-hint"
+                        aria-invalid={bodyweight.trim() !== "" && (!Number.isFinite(bodyweightValue) || (usesBodyweight && bodyweightValue <= 0))}
                       />
                       <span className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-xs font-bold text-white/35">
                         {unit.toUpperCase()}
                       </span>
                     </div>
+                    <p id="bodyweight-hint" className="mt-2 text-xs text-white/55">
+                      {bodyweight.includes("+") && Number.isFinite(bodyweightValue)
+                        ? `= ${round(bodyweightValue)} ${unit}`
+                        : "Admite sumas, por ejemplo: 70+5."}
+                    </p>
                   </div>
                 )}
 
@@ -324,18 +353,28 @@ export default function Home() {
                   <div className="relative">
                     <Input
                       id="load"
-                      inputMode="decimal"
-                      min="0"
-                      step="0.1"
-                      type="number"
+                      inputMode="text"
+                      type="text"
+                      autoComplete="off"
+                      spellCheck={false}
                       value={load}
-                      onChange={(event) => setLoad(event.target.value)}
+                      onChange={(event) => {
+                        setLoad(event.target.value);
+                        setUnitError("");
+                      }}
+                      aria-describedby="load-hint"
+                      aria-invalid={load.trim() !== "" && !Number.isFinite(loadValue)}
                       className="h-14 rounded-xl border-white/10 bg-black/25 px-4 pr-12 text-xl font-black shadow-none focus-visible:border-[#c8ff32]/60 focus-visible:ring-[#c8ff32]/20"
                     />
                     <span className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-xs font-bold text-white/35">
                       {unit.toUpperCase()}
                     </span>
                   </div>
+                  <p id="load-hint" className="mt-2 text-xs text-white/55">
+                    {load.includes("+") && Number.isFinite(loadValue)
+                      ? `= ${round(loadValue)} ${unit}`
+                      : "Admite sumas, por ejemplo: 135+50."}
+                  </p>
                 </div>
 
                 <div>
@@ -441,7 +480,7 @@ export default function Home() {
                   <div className="py-8" aria-live="polite">
                     <p className="text-2xl font-black tracking-tight">Revisa los datos</p>
                     <p className="mt-2 text-sm leading-6 text-black/50">
-                      Introduce valores válidos; repeticiones + RIR no puede superar 15.
+                      Introduce pesos o sumas completas (ej. 135+50); repeticiones + RIR no puede superar 15.
                     </p>
                   </div>
                 )}
