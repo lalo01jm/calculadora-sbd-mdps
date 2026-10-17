@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import { Activity, ArrowUpRight, Dumbbell, Info } from "lucide-react";
 
 import { Input } from "@/components/ui/input";
@@ -56,6 +56,8 @@ export default function Home() {
   const [rir, setRir] = useState("");
   const [unit, setUnit] = useState<Unit>("kg");
   const [unitError, setUnitError] = useState("");
+  const bodyweightInput = useRef<HTMLInputElement>(null);
+  const loadInput = useRef<HTMLInputElement>(null);
 
   const bodyweightValue = parseWeightExpression(bodyweight);
   const loadValue = parseWeightExpression(load);
@@ -163,6 +165,23 @@ export default function Home() {
     const next = nextMode as Mode;
     setMode(next);
     setExercise(next === "sbd" ? "squat" : "pull-up");
+  };
+
+  const insertPlus = (field: "bodyweight" | "load") => {
+    const input = field === "bodyweight" ? bodyweightInput.current : loadInput.current;
+    if (!input) return;
+
+    const start = input.selectionStart ?? input.value.length;
+    const end = input.selectionEnd ?? start;
+    const nextValue = input.value.slice(0, start) + "+" + input.value.slice(end);
+
+    if (field === "bodyweight") setBodyweight(nextValue);
+    else setLoad(nextValue);
+    setUnitError("");
+
+    // Keep the numeric keyboard open and continue typing after the inserted +.
+    input.focus({ preventScroll: true });
+    requestAnimationFrame(() => input.setSelectionRange(start + 1, start + 1));
   };
 
   const switchUnit = (nextUnit: Unit) => {
@@ -317,7 +336,8 @@ export default function Home() {
                     <div className="relative">
                       <Input
                         id="bodyweight"
-                        inputMode="text"
+                        ref={bodyweightInput}
+                        inputMode="decimal"
                         type="text"
                         autoComplete="off"
                         spellCheck={false}
@@ -326,11 +346,20 @@ export default function Home() {
                           setBodyweight(event.target.value);
                           setUnitError("");
                         }}
-                        className="h-14 rounded-xl border-white/10 bg-black/25 px-4 pr-12 text-xl font-black shadow-none focus-visible:border-[#c8ff32]/60 focus-visible:ring-[#c8ff32]/20"
+                        className="h-14 rounded-xl border-white/10 bg-black/25 px-4 pr-24 text-xl font-black shadow-none focus-visible:border-[#c8ff32]/60 focus-visible:ring-[#c8ff32]/20"
                         aria-required={usesBodyweight}
                         aria-describedby="bodyweight-hint"
                         aria-invalid={bodyweight.trim() !== "" && (!Number.isFinite(bodyweightValue) || (usesBodyweight && bodyweightValue <= 0))}
                       />
+                      <button
+                        type="button"
+                        aria-label="Añadir suma al peso corporal"
+                        onPointerDown={(event) => event.preventDefault()}
+                        onClick={() => insertPlus("bodyweight")}
+                        className="absolute right-11 top-1/2 flex size-11 -translate-y-1/2 items-center justify-center rounded-lg bg-[#c8ff32]/10 text-2xl font-bold text-[#c8ff32] hover:bg-[#c8ff32]/20 focus-visible:outline-2 focus-visible:outline-[#c8ff32]"
+                      >
+                        +
+                      </button>
                       <span className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-xs font-bold text-white/35">
                         {unit.toUpperCase()}
                       </span>
@@ -338,7 +367,7 @@ export default function Home() {
                     <p id="bodyweight-hint" className="mt-2 text-xs text-white/55">
                       {bodyweight.includes("+") && Number.isFinite(bodyweightValue)
                         ? `= ${round(bodyweightValue)} ${unit}`
-                        : "Admite sumas, por ejemplo: 70+5."}
+                        : "Usa + para sumar, por ejemplo: 70+5."}
                     </p>
                   </div>
                 )}
@@ -353,7 +382,8 @@ export default function Home() {
                   <div className="relative">
                     <Input
                       id="load"
-                      inputMode="text"
+                      ref={loadInput}
+                      inputMode="decimal"
                       type="text"
                       autoComplete="off"
                       spellCheck={false}
@@ -364,8 +394,17 @@ export default function Home() {
                       }}
                       aria-describedby="load-hint"
                       aria-invalid={load.trim() !== "" && !Number.isFinite(loadValue)}
-                      className="h-14 rounded-xl border-white/10 bg-black/25 px-4 pr-12 text-xl font-black shadow-none focus-visible:border-[#c8ff32]/60 focus-visible:ring-[#c8ff32]/20"
+                      className="h-14 rounded-xl border-white/10 bg-black/25 px-4 pr-24 text-xl font-black shadow-none focus-visible:border-[#c8ff32]/60 focus-visible:ring-[#c8ff32]/20"
                     />
+                    <button
+                      type="button"
+                      aria-label="Añadir suma al lastre o peso en barra"
+                      onPointerDown={(event) => event.preventDefault()}
+                      onClick={() => insertPlus("load")}
+                      className="absolute right-11 top-1/2 flex size-11 -translate-y-1/2 items-center justify-center rounded-lg bg-[#c8ff32]/10 text-2xl font-bold text-[#c8ff32] hover:bg-[#c8ff32]/20 focus-visible:outline-2 focus-visible:outline-[#c8ff32]"
+                    >
+                      +
+                    </button>
                     <span className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-xs font-bold text-white/35">
                       {unit.toUpperCase()}
                     </span>
@@ -373,7 +412,7 @@ export default function Home() {
                   <p id="load-hint" className="mt-2 text-xs text-white/55">
                     {load.includes("+") && Number.isFinite(loadValue)
                       ? `= ${round(loadValue)} ${unit}`
-                      : "Admite sumas, por ejemplo: 135+50."}
+                      : "Usa + para sumar, por ejemplo: 135+50."}
                   </p>
                 </div>
 
