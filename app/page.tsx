@@ -480,7 +480,7 @@ export default function Home() {
         </div>
 
         {calculation && (
-          <section className="mt-6 overflow-hidden rounded-[1.75rem] border border-white/10 bg-white/[0.045] shadow-2xl shadow-black/20 backdrop-blur-sm">
+          <section className="mt-6 w-full min-w-0 overflow-hidden rounded-[1.75rem] border border-white/10 bg-white/[0.045] shadow-2xl shadow-black/20 backdrop-blur-sm">
             <div className="flex flex-col gap-2 border-b border-white/10 p-5 sm:flex-row sm:items-end sm:justify-between sm:p-7">
               <div>
                 <p className="text-[10px] font-black uppercase tracking-[0.16em] text-[#c8ff32]">
@@ -495,19 +495,30 @@ export default function Home() {
               </p>
             </div>
 
-            <div className="overflow-x-auto">
-              <table className="w-full min-w-[30rem] border-collapse text-left">
+            <div className="w-full">
+              <table className="w-full table-fixed border-collapse text-left">
+                <caption className="sr-only">
+                  Cargas estimadas de 1 a 12 repeticiones en {unit}
+                </caption>
+                <colgroup>
+                  <col className={usesBodyweight ? "w-[30%]" : "w-[40%]"} />
+                  <col />
+                  {usesBodyweight && <col />}
+                </colgroup>
                 <thead>
-                  <tr className="border-b border-white/10 text-[10px] font-black uppercase tracking-[0.14em] text-white/40">
-                    <th scope="col" className="px-5 py-4 sm:px-7">
-                      Repeticiones
+                  <tr className="border-b border-white/10 text-[10px] font-black uppercase tracking-[0.08em] text-white/40 sm:tracking-[0.14em]">
+                    <th scope="col" className="px-3 py-4 sm:px-7">
+                      <span className="sm:hidden">Reps.</span>
+                      <span className="hidden sm:inline">Repeticiones</span>
                     </th>
-                    <th scope="col" className="px-5 py-4 text-right sm:px-7">
-                      {usesBodyweight ? "Lastre estimado" : "Carga estimada"}
+                    <th scope="col" className="px-3 py-4 text-right sm:px-7">
+                      <span className="sm:hidden">{usesBodyweight ? "Lastre" : "Carga"}</span>
+                      <span className="hidden sm:inline">{usesBodyweight ? "Lastre estimado" : "Carga estimada"}</span>
                     </th>
                     {usesBodyweight && (
-                      <th scope="col" className="px-5 py-4 text-right sm:px-7">
-                        Carga total
+                      <th scope="col" className="px-3 py-4 text-right sm:px-7">
+                        <span className="sm:hidden">Total</span>
+                        <span className="hidden sm:inline">Carga total</span>
                       </th>
                     )}
                   </tr>
@@ -525,9 +536,9 @@ export default function Home() {
                       >
                         <th
                           scope="row"
-                          className="px-5 py-3.5 text-sm font-black tabular-nums sm:px-7"
+                          className="px-3 py-3.5 text-sm font-black tabular-nums sm:px-7"
                         >
-                          <span className="inline-flex items-center gap-2">
+                          <span className="inline-flex flex-col items-start gap-1 sm:flex-row sm:items-center sm:gap-2">
                             {row.reps}
                             {isCurrent && (
                               <span className="rounded-full bg-[#c8ff32] px-2 py-0.5 text-[9px] uppercase tracking-[0.1em] text-[#0b0d0c]">
@@ -536,11 +547,11 @@ export default function Home() {
                             )}
                           </span>
                         </th>
-                        <td className="px-5 py-3.5 text-right font-mono text-sm font-black tabular-nums text-[#c8ff32] sm:px-7">
+                        <td className="px-3 py-3.5 text-right font-mono text-xs font-black tabular-nums text-[#c8ff32] [overflow-wrap:anywhere] sm:px-7 sm:text-sm">
                           {round(row.load)} {unit}
                         </td>
                         {usesBodyweight && (
-                          <td className="px-5 py-3.5 text-right font-mono text-sm font-bold tabular-nums text-white/65 sm:px-7">
+                          <td className="px-3 py-3.5 text-right font-mono text-xs font-bold tabular-nums text-white/65 [overflow-wrap:anywhere] sm:px-7 sm:text-sm">
                             {round(row.total)} {unit}
                           </td>
                         )}
