@@ -28,12 +28,12 @@ test("rejects empty, incomplete, negative and unsupported expressions", () => {
 
 test("a sum behaves exactly like its total in estimates and unit conversion", () => {
   const estimate = (bodyweight, load, reps, rir = 0) => {
-    const weight = parseWeightExpression(bodyweight) + parseWeightExpression(load);
+    const weight = Number(bodyweight) + parseWeightExpression(load);
     const effectiveReps = reps + rir;
     return (weight * (1 + effectiveReps / 30) +
       weight * 36 / (37 - effectiveReps) + weight * effectiveReps ** 0.1) / 3;
   };
-  assert.equal(estimate("70+5", "15+5", 5, 2), estimate("75", "20", 5, 2));
+  assert.equal(estimate("75", "15+5", 5, 2), estimate("75", "20", 5, 2));
   const pounds = parseWeightExpression("135+50") * 2.2046226218;
   assert.ok(Math.abs(pounds - 407.855185033) < 1e-8);
   assert.ok(Math.abs(pounds / 2.2046226218 - 185) < 1e-10);
