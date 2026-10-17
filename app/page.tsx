@@ -18,9 +18,9 @@ function round(value: number) {
 
 export default function Home() {
   const [mode, setMode] = useState<Mode>("mdps");
-  const [bodyweight, setBodyweight] = useState("75");
-  const [load, setLoad] = useState("20");
-  const [reps, setReps] = useState("5");
+  const [bodyweight, setBodyweight] = useState("");
+  const [load, setLoad] = useState("");
+  const [reps, setReps] = useState("");
   const [rir, setRir] = useState("");
   const [unit, setUnit] = useState<Unit>("kg");
   const [unitError, setUnitError] = useState("");
@@ -61,6 +61,10 @@ export default function Home() {
   const loadValue = parseWeightExpression(load);
 
   const usesBodyweight = mode === "mdps";
+  const hasRequiredInputs =
+    load.trim() !== "" &&
+    reps.trim() !== "" &&
+    (!usesBodyweight || bodyweight.trim() !== "");
 
   const calculation = useMemo(() => {
     const bw = Number(bodyweight);
@@ -387,7 +391,6 @@ export default function Home() {
                     max="10"
                     step="0.5"
                     type="number"
-                    placeholder="0"
                     value={rir}
                     aria-describedby="rir-hint"
                     onChange={(event) => setRir(event.target.value)}
@@ -433,6 +436,12 @@ export default function Home() {
                       </div>
                     )}
                   </div>
+                ) : !hasRequiredInputs ? (
+                  <div aria-live="polite">
+                    <span aria-label="Resultado pendiente" className="text-6xl font-black leading-none text-black/25">
+                      —
+                    </span>
+                  </div>
                 ) : (
                   <div className="py-8" aria-live="polite">
                     <p className="text-2xl font-black tracking-tight">Revisa los datos</p>
@@ -443,7 +452,8 @@ export default function Home() {
                 )}
               </div>
 
-              <details className="px-5 py-3 sm:px-6">
+              {calculation && (
+                <details className="px-5 py-3 sm:px-6">
                 <summary className="cursor-pointer text-xs font-bold text-black/55">
                   Ver fórmulas
                 </summary>
@@ -460,7 +470,8 @@ export default function Home() {
                     </div>
                   ))}
                 </div>
-              </details>
+                </details>
+              )}
             </div>
           </aside>
         </div>
