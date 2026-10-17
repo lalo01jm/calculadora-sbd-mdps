@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Activity, ArrowUpRight, Dumbbell, Info } from "lucide-react";
+import { Activity } from "lucide-react";
 
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -209,19 +209,14 @@ export default function Home() {
       <div className="pointer-events-none absolute -right-28 top-[-7rem] h-80 w-80 rounded-full bg-[#c8ff32]/10 blur-3xl" />
 
       <div className="relative mx-auto flex min-h-screen w-full max-w-6xl flex-col px-4 py-5 sm:px-7 sm:py-7 lg:px-10">
-        <header className="mb-7 flex items-center justify-between border-b border-white/10 pb-5 sm:mb-10">
-          <div className="flex items-center gap-3">
-            <div className="flex size-9 items-center justify-center rounded-full border border-[#c8ff32]/50 bg-[#c8ff32]/10 text-[#c8ff32]">
+        <header className="mb-4 flex min-h-9 items-center justify-between border-b border-white/10 pb-4">
+          <div className="flex items-center gap-2">
+            <div className="flex size-8 items-center justify-center rounded-full border border-[#c8ff32]/50 bg-[#c8ff32]/10 text-[#c8ff32]">
               <Activity aria-hidden="true" className="size-4" strokeWidth={2.2} />
             </div>
-            <div>
-              <p className="text-sm font-black uppercase tracking-[0.18em]">1RM Lab</p>
-              <p className="text-[10px] uppercase tracking-[0.16em] text-white/45">
-                Fuerza estimada
-              </p>
-            </div>
+            <h1 className="text-sm font-black uppercase tracking-[0.18em]">1RM Lab</h1>
           </div>
-          <div className="flex flex-col items-end gap-1.5 pt-9">
+          <div className="flex flex-col items-end gap-1.5 pl-4 pt-9">
             <div
               ref={unitSwitcher}
               className="fixed right-4 top-5 z-50 flex rounded-full border border-white/15 bg-[#0b0d0c]/90 p-0.5 shadow-[0_8px_24px_rgba(0,0,0,.35)] backdrop-blur-md sm:right-7 sm:top-7 lg:right-10 xl:right-[calc((100vw-72rem)/2+2.5rem)]"
@@ -249,9 +244,6 @@ export default function Home() {
                 </button>
               ))}
             </div>
-            <span className="max-w-40 text-right text-[9px] font-semibold leading-3 text-white/55">
-              Página generada enteramente por IA
-            </span>
             {unitError && (
               <span role="alert" className="max-w-44 text-right text-xs text-amber-300">
                 {unitError}
@@ -260,24 +252,11 @@ export default function Home() {
           </div>
         </header>
 
-        <div className="grid flex-1 items-start gap-6 lg:grid-cols-[minmax(0,1.02fr)_minmax(360px,.98fr)] lg:gap-12">
+        <div className="grid items-start gap-4 lg:grid-cols-[minmax(0,1.02fr)_minmax(360px,.98fr)] lg:gap-6">
           <section className="max-w-2xl">
-            <div className="mb-6">
-              <p className="mb-3 flex items-center gap-2 text-xs font-bold uppercase tracking-[0.16em] text-[#c8ff32]">
-                <span className="h-px w-7 bg-[#c8ff32]" /> Calculadora de fuerza
-              </p>
-              <h1 className="max-w-xl text-[clamp(2.5rem,8vw,5.4rem)] font-black leading-[0.91] tracking-[-0.06em]">
-                Calcula tu
-                <span className="block text-[#c8ff32]">1RM estimado.</span>
-              </h1>
-              <p className="mt-5 max-w-lg text-sm leading-6 text-white/55 sm:text-base">
-                Promedio de Epley, Brzycki y Lombardi para powerlifting y streetlifting.
-              </p>
-            </div>
-
             <div className="rounded-[1.75rem] border border-white/10 bg-white/[0.045] p-4 shadow-2xl shadow-black/20 backdrop-blur-sm sm:p-6">
               <Tabs value={mode} onValueChange={switchMode}>
-                <TabsList className="mb-6 grid h-12 w-full grid-cols-2 rounded-2xl border border-white/10 bg-black/30 p-1">
+                <TabsList className="mb-4 grid h-12 w-full grid-cols-2 rounded-2xl border border-white/10 bg-black/30 p-1">
                   <TabsTrigger
                     value="sbd"
                     className="h-full rounded-xl text-xs font-black uppercase tracking-[0.12em] text-white/45 data-[state=active]:bg-[#f4f3ea] data-[state=active]:text-[#0b0d0c]"
@@ -293,9 +272,9 @@ export default function Home() {
                 </TabsList>
               </Tabs>
 
-              <div className="grid gap-5 sm:grid-cols-2">
+              <div className="grid grid-cols-2 gap-4">
                 {mode === "mdps" && (
-                  <div>
+                  <div className="col-span-2 sm:col-span-1">
                     <Label
                       htmlFor="bodyweight"
                       className="mb-2 text-[11px] font-bold uppercase tracking-[0.13em] text-white/50"
@@ -316,7 +295,7 @@ export default function Home() {
                           setBodyweight(event.target.value);
                           setUnitError("");
                         }}
-                        className="h-14 rounded-xl border-white/10 bg-black/25 px-4 pr-12 text-xl font-black shadow-none focus-visible:border-[#c8ff32]/60 focus-visible:ring-[#c8ff32]/20"
+                        className="h-12 rounded-xl border-white/10 bg-black/25 px-4 pr-12 text-xl font-black shadow-none focus-visible:border-[#c8ff32]/60 focus-visible:ring-[#c8ff32]/20 sm:h-14"
                         aria-required={usesBodyweight}
                         aria-invalid={bodyweight.trim() !== "" && (!Number.isFinite(bodyweightValue) || (usesBodyweight && bodyweightValue <= 0))}
                       />
@@ -327,12 +306,12 @@ export default function Home() {
                   </div>
                 )}
 
-                <div className={mode === "sbd" ? "sm:col-span-2" : ""}>
+                <div className={mode === "sbd" ? "col-span-2" : "col-span-2 sm:col-span-1"}>
                   <Label
                     htmlFor="load"
                     className="mb-2 text-[11px] font-bold uppercase tracking-[0.13em] text-white/50"
                   >
-                    {usesBodyweight ? "Lastre añadido" : "Peso en barra"}
+                    {usesBodyweight ? "Lastre" : "Peso en barra"}
                   </Label>
                   <div className="relative">
                     <Input
@@ -347,9 +326,9 @@ export default function Home() {
                         setLoad(event.target.value);
                         setUnitError("");
                       }}
-                      aria-describedby="load-hint"
+                      aria-describedby={load.includes("+") && Number.isFinite(loadValue) ? "load-hint" : undefined}
                       aria-invalid={load.trim() !== "" && !Number.isFinite(loadValue)}
-                      className="h-14 rounded-xl border-white/10 bg-black/25 px-4 pr-24 text-xl font-black shadow-none focus-visible:border-[#c8ff32]/60 focus-visible:ring-[#c8ff32]/20"
+                      className="h-12 rounded-xl border-white/10 bg-black/25 px-4 pr-24 text-xl font-black shadow-none focus-visible:border-[#c8ff32]/60 focus-visible:ring-[#c8ff32]/20 sm:h-14"
                     />
                     <button
                       type="button"
@@ -364,11 +343,11 @@ export default function Home() {
                       {unit.toUpperCase()}
                     </span>
                   </div>
-                  <p id="load-hint" className="mt-2 text-xs text-white/55">
-                    {load.includes("+") && Number.isFinite(loadValue)
-                      ? `= ${round(loadValue)} ${unit}`
-                      : "Usa + para sumar, por ejemplo: 135+50."}
-                  </p>
+                  {load.includes("+") && Number.isFinite(loadValue) && (
+                    <p id="load-hint" className="mt-1.5 text-xs text-white/55">
+                      = {round(loadValue)} {unit}
+                    </p>
+                  )}
                 </div>
 
                 <div>
@@ -387,11 +366,8 @@ export default function Home() {
                     type="number"
                     value={reps}
                     onChange={(event) => setReps(event.target.value)}
-                    className="h-14 rounded-xl border-white/10 bg-black/25 px-4 text-xl font-black shadow-none focus-visible:border-[#c8ff32]/60 focus-visible:ring-[#c8ff32]/20"
+                    className="h-12 rounded-xl border-white/10 bg-black/25 px-4 text-xl font-black shadow-none focus-visible:border-[#c8ff32]/60 focus-visible:ring-[#c8ff32]/20 sm:h-14"
                   />
-                  <p className="mt-2 text-xs text-white/35">
-                    Repeticiones realizadas en la serie.
-                  </p>
                 </div>
 
                 <div>
@@ -413,11 +389,12 @@ export default function Home() {
                     type="number"
                     placeholder="0"
                     value={rir}
+                    aria-describedby="rir-hint"
                     onChange={(event) => setRir(event.target.value)}
-                    className="h-14 rounded-xl border-white/10 bg-black/25 px-4 text-xl font-black shadow-none focus-visible:border-[#c8ff32]/60 focus-visible:ring-[#c8ff32]/20"
+                    className="h-12 rounded-xl border-white/10 bg-black/25 px-4 text-xl font-black shadow-none focus-visible:border-[#c8ff32]/60 focus-visible:ring-[#c8ff32]/20 sm:h-14"
                   />
-                  <p className="mt-2 text-xs text-white/35">
-                    Vacío o 0 = serie al fallo. Repeticiones + RIR debe ser ≤ 15.
+                  <p id="rir-hint" className="sr-only">
+                    Repeticiones en reserva. Vacío equivale a 0. Repeticiones + RIR no puede superar 15.
                   </p>
                 </div>
               </div>
@@ -426,20 +403,10 @@ export default function Home() {
 
           <aside className="lg:sticky lg:top-7">
             <div className="overflow-hidden rounded-[1.75rem] bg-[#f4f3ea] text-[#101210] shadow-[0_30px_80px_rgba(0,0,0,.35)]">
-              <div className="border-b border-black/10 p-5 sm:p-7">
-                <div className="mb-8 flex items-start justify-between gap-4">
-                  <div>
-                    <p className="text-[10px] font-black uppercase tracking-[0.16em] text-black/40">
-                      Resultado · {mode.toUpperCase()}
-                    </p>
-                    <p className="mt-1 text-sm font-semibold text-black/60">
-                      {usesBodyweight ? "1RM de lastre" : "1RM en barra"}
-                    </p>
-                  </div>
-                  <div className="flex size-10 shrink-0 items-center justify-center rounded-full bg-[#101210] text-[#c8ff32]">
-                    <ArrowUpRight aria-hidden="true" className="size-5" />
-                  </div>
-                </div>
+              <div className="border-b border-black/10 p-5 sm:p-6">
+                <h2 className="mb-5 text-sm font-bold text-black/60">
+                  {usesBodyweight ? "1RM estimado de lastre" : "1RM estimado en barra"}
+                </h2>
 
                 {calculation ? (
                   <div aria-live="polite">
@@ -451,20 +418,16 @@ export default function Home() {
                         {unit}
                       </span>
                     </div>
-                    <p className="mt-5 inline-flex items-center gap-2 rounded-full bg-[#c8ff32] px-3 py-1.5 text-[11px] font-black uppercase tracking-[0.08em]">
-                      <Dumbbell aria-hidden="true" className="size-3.5" />
-                      Promedio de 3 fórmulas
-                    </p>
                     {(usesBodyweight || calculation.rir > 0) && (
                       <div className="mt-4 space-y-1 text-xs font-semibold text-black/45">
                         {usesBodyweight && (
                           <p>
-                            Carga total estimada: {round(calculation.averageTotal)} {unit}
+                            Total: {round(calculation.averageTotal)} {unit}
                           </p>
                         )}
                         {calculation.rir > 0 && (
                           <p>
-                            RIR aplicado: {round(calculation.rir)} · {round(calculation.effectiveReps)} repeticiones efectivas
+                            {reps} reps + {round(calculation.rir)} RIR
                           </p>
                         )}
                       </div>
@@ -474,17 +437,17 @@ export default function Home() {
                   <div className="py-8" aria-live="polite">
                     <p className="text-2xl font-black tracking-tight">Revisa los datos</p>
                     <p className="mt-2 text-sm leading-6 text-black/50">
-                      Introduce pesos o sumas completas (ej. 135+50); repeticiones + RIR no puede superar 15.
+                      Usa pesos válidos y un máximo de 15 repeticiones + RIR.
                     </p>
                   </div>
                 )}
               </div>
 
-              <div className="p-5 sm:p-7">
-                <p className="mb-4 text-[10px] font-black uppercase tracking-[0.16em] text-black/35">
-                  Desglose
-                </p>
-                <div className="space-y-2">
+              <details className="px-5 py-3 sm:px-6">
+                <summary className="cursor-pointer text-xs font-bold text-black/55">
+                  Ver fórmulas
+                </summary>
+                <div className="mt-3 space-y-2">
                   {calculation?.formulas.map((formula) => (
                     <div
                       key={formula.name}
@@ -497,39 +460,17 @@ export default function Home() {
                     </div>
                   ))}
                 </div>
-              </div>
-            </div>
-
-            <div className="mt-4 flex gap-3 rounded-2xl border border-white/10 bg-white/[0.035] p-4 text-xs leading-5 text-white/45">
-              <Info aria-hidden="true" className="mt-0.5 size-4 shrink-0 text-[#c8ff32]" />
-              <div>
-                <p>
-                {usesBodyweight
-                  ? "Se estima primero la carga total (peso corporal + lastre) y después se resta tu peso para obtener el 1RM de lastre."
-                  : "En ejercicios con barra, el peso corporal no se suma a la carga; solo se usa el peso levantado."}
-                </p>
-                <p className="mt-2 text-white/35">
-                  El RIR se suma a las repeticiones realizadas para aproximar las repeticiones máximas posibles.
-                </p>
-              </div>
+              </details>
             </div>
           </aside>
         </div>
 
         {calculation && (
-          <section className="mt-6 w-full min-w-0 overflow-hidden rounded-[1.75rem] border border-white/10 bg-white/[0.045] shadow-2xl shadow-black/20 backdrop-blur-sm">
-            <div className="flex flex-col gap-2 border-b border-white/10 p-5 sm:flex-row sm:items-end sm:justify-between sm:p-7">
-              <div>
-                <p className="text-[10px] font-black uppercase tracking-[0.16em] text-[#c8ff32]">
-                  Proyección de fuerza
-                </p>
-                <h2 className="mt-1 text-2xl font-black tracking-tight sm:text-3xl">
-                  Tabla de cargas · 1–12 repeticiones
-                </h2>
-              </div>
-              <p className="max-w-md text-xs leading-5 text-white/45 sm:text-right">
-                Carga estimada al invertir Epley, Brzycki y Lombardi usando tu 1RM promedio.
-              </p>
+          <section className="mt-4 w-full min-w-0 overflow-hidden rounded-[1.75rem] border border-white/10 bg-white/[0.045] shadow-2xl shadow-black/20 backdrop-blur-sm">
+            <div className="border-b border-white/10 px-5 py-4 sm:px-7">
+              <h2 className="text-base font-black tracking-tight">
+                Cargas por repeticiones
+              </h2>
             </div>
 
             <div className="w-full">
@@ -601,17 +542,14 @@ export default function Home() {
 
             {usesBodyweight && repetitionTable.some((row) => row.load < 0) && (
               <p className="border-t border-white/10 px-5 py-4 text-xs leading-5 text-white/40 sm:px-7">
-                Un lastre negativo representa la asistencia aproximada necesaria para esa cantidad de repeticiones.
+                Lastre negativo = asistencia.
               </p>
             )}
           </section>
         )}
 
-        <footer className="mt-10 flex flex-col gap-2 border-t border-white/10 py-5 text-[10px] font-bold uppercase tracking-[0.12em] text-white/30 sm:flex-row sm:items-center sm:justify-between">
-          <span>Estimación orientativa · No sustituye un intento real</span>
-          <span className="normal-case tracking-normal text-white/25">
-            Esta página fue enteramente generada por IA.
-          </span>
+        <footer className="mt-6 border-t border-white/10 py-4 text-[10px] text-white/40">
+          Esta página fue enteramente generada por IA.
         </footer>
       </div>
     </main>
